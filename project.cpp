@@ -8,6 +8,7 @@
 #include <climits>
 #include <cstdlib>
 #include <ctime>
+#include <string>
 
 using namespace std;
 using namespace chrono;
@@ -370,7 +371,7 @@ void compareResults(const vector<AlgorithmResult>& results, const Graph& g) {
 }
 
 // ===========================
-// MAIN FUNCTION - RUN EXPERIMENTS
+// MAIN FUNCTION - INTERACTIVE EXPERIMENTS
 // ===========================
 
 int main() {
@@ -382,95 +383,134 @@ int main() {
     TwoApproxVC twoApprox;
     
     cout << "VERTEX COVER ALGORITHM COMPARISON\n";
-    cout << "Low-Complexity Experiment: Small Graphs (≤20 vertices)\n\n";
+    cout << "Interactive Experiment Tool\n\n";
     
-    // ===========================
-    // TEST 1: Small Random Graph
-    // ===========================
+    char continueChoice = 'y';
+    
+    while (continueChoice == 'y' || continueChoice == 'Y') {
+        // Graph type selection
+        cout << "\nChoose graph type:\n";
+        cout << "1. Random Graph\n";
+        cout << "2. Complete Graph\n";
+        cout << "3. Cycle Graph\n";
+        cout << "4. Path Graph\n";
+        cout << "Enter choice (1-4): ";
+        
+        int graphType;
+        cin >> graphType;
+        
+        // Get number of vertices
+        int vertices;
+        cout << "Enter number of vertices: ";
+        cin >> vertices;
+        
+        // Input validation
+        if (vertices < 1) {
+            cout << "Invalid input. Using 3 vertices.\n";
+            vertices = 3;
+        } else if (vertices > 25) {
+            cout << "Warning: Recommended range is 1-25 vertices for performance.\n";
+        }
+        
+        // Create graph based on user choice
+        Graph g(1);
+        string graphDescription;
+        
+        switch (graphType) {
+            case 1: {
+                double probability;
+                cout << "Enter edge probability (0.0-1.0): ";
+                cin >> probability;
+                if (probability < 0.0 || probability > 1.0) {
+                    cout << "Invalid probability. Using 0.3\n";
+                    probability = 0.3;
+                }
+                g = createRandomGraph(vertices, probability);
+                graphDescription = "Random Graph (" + to_string(vertices) + " vertices, " + 
+                                 to_string((int)(probability * 100)) + "% edge probability)";
+                break;
+            }
+            case 2:
+                g = createCompleteGraph(vertices);
+                graphDescription = "Complete Graph (" + to_string(vertices) + " vertices)";
+                break;
+            case 3:
+                if (vertices < 3) {
+                    cout << "Cycle graph needs at least 3 vertices. Using 3.\n";
+                    vertices = 3;
+                }
+                g = createCycleGraph(vertices);
+                graphDescription = "Cycle Graph (" + to_string(vertices) + " vertices)";
+                break;
+            case 4:
+                if (vertices < 2) {
+                    cout << "Path graph needs at least 2 vertices. Using 2.\n";
+                    vertices = 2;
+                }
+                g = createPathGraph(vertices);
+                graphDescription = "Path Graph (" + to_string(vertices) + " vertices)";
+                break;
+            default:
+                cout << "Invalid choice. Creating random graph.\n";
+                g = createRandomGraph(vertices, 0.3);
+                graphDescription = "Random Graph (" + to_string(vertices) + " vertices, 30% edge probability)";
+        }
+        
+        // Algorithm selection
+        cout << "\nChoose algorithms to run:\n";
+        cout << "1. All algorithms (recommended for ≤15 vertices)\n";
+        cout << "2. Skip brute force (for larger graphs)\n";
+        cout << "3. Approximation algorithms only\n";
+        cout << "Enter choice (1-3): ";
+        
+        int algoChoice;
+        cin >> algoChoice;
+        
+        // Input validation for algorithm choice
+        if (algoChoice < 1 || algoChoice > 3) {
+            cout << "Invalid choice. Using all algorithms.\n";
+            algoChoice = 1;
+        }
+        
+        // Display test header
+        cout << "\n" << string(60, '=') << "\n";
+        cout << "TEST: " << graphDescription << "\n";
+        cout << string(60, '=') << "\n";
+        
+        g.printGraph();
+        
+        // Run selected algorithms
+        vector<AlgorithmResult> results;
+        
+        if (algoChoice == 1 || algoChoice == 2) {
+            if (algoChoice == 1) {
+                if (vertices > 15) {
+                    cout << "\nWarning: Brute force may be slow for >15 vertices. Continue? (y/n): ";
+                    char confirm;
+                    cin >> confirm;
+                    if (confirm == 'y' || confirm == 'Y') {
+                        results.push_back(bruteForce.solve(g));
+                    }
+                } else {
+                    results.push_back(bruteForce.solve(g));
+                }
+            }
+            results.push_back(greedy.solve(g));
+            results.push_back(twoApprox.solve(g));
+        } else {
+            results.push_back(greedy.solve(g));
+            results.push_back(twoApprox.solve(g));
+        }
+        
+        compareResults(results, g);
+        
+        // Ask to continue
+        cout << "\nRun another experiment? (y/n): ";
+        cin >> continueChoice;
+    }
+    
     cout << "\n" << string(60, '=') << "\n";
-    cout << "TEST 1: Random Graph (10 vertices, 30% edge probability)\n";
-    cout << string(60, '=') << "\n";
-    
-    Graph g1 = createRandomGraph(10, 0.3);
-    g1.printGraph();
-    
-    vector<AlgorithmResult> results1;
-    results1.push_back(bruteForce.solve(g1));
-    results1.push_back(greedy.solve(g1));
-    results1.push_back(twoApprox.solve(g1));
-    
-    compareResults(results1, g1);
-    
-    // ===========================
-    // TEST 2: Complete Graph
-    // ===========================
-    cout << "\n\n" << string(60, '=') << "\n";
-    cout << "TEST 2: Complete Graph (8 vertices)\n";
-    cout << string(60, '=') << "\n";
-    
-    Graph g2 = createCompleteGraph(8);
-    g2.printGraph();
-    
-    vector<AlgorithmResult> results2;
-    results2.push_back(bruteForce.solve(g2));
-    results2.push_back(greedy.solve(g2));
-    results2.push_back(twoApprox.solve(g2));
-    
-    compareResults(results2, g2);
-    
-    // ===========================
-    // TEST 3: Cycle Graph
-    // ===========================
-    cout << "\n\n" << string(60, '=') << "\n";
-    cout << "TEST 3: Cycle Graph (12 vertices)\n";
-    cout << string(60, '=') << "\n";
-    
-    Graph g3 = createCycleGraph(12);
-    g3.printGraph();
-    
-    vector<AlgorithmResult> results3;
-    results3.push_back(bruteForce.solve(g3));
-    results3.push_back(greedy.solve(g3));
-    results3.push_back(twoApprox.solve(g3));
-    
-    compareResults(results3, g3);
-    
-    // ===========================
-    // TEST 4: Path Graph
-    // ===========================
-    cout << "\n\n" << string(60, '=') << "\n";
-    cout << "TEST 4: Path Graph (15 vertices)\n";
-    cout << string(60, '=') << "\n";
-    
-    Graph g4 = createPathGraph(15);
-    g4.printGraph();
-    
-    vector<AlgorithmResult> results4;
-    results4.push_back(bruteForce.solve(g4));
-    results4.push_back(greedy.solve(g4));
-    results4.push_back(twoApprox.solve(g4));
-    
-    compareResults(results4, g4);
-    
-    // ===========================
-    // TEST 5: Dense Random Graph
-    // ===========================
-    cout << "\n\n" << string(60, '=') << "\n";
-    cout << "TEST 5: Dense Random Graph (8 vertices, 70% edge probability)\n";
-    cout << string(60, '=') << "\n";
-    
-    Graph g5 = createRandomGraph(8, 0.7);
-    g5.printGraph();
-    
-    vector<AlgorithmResult> results5;
-    results5.push_back(bruteForce.solve(g5));
-    results5.push_back(greedy.solve(g5));
-    results5.push_back(twoApprox.solve(g5));
-    
-    compareResults(results5, g5);
-    
-    cout << "\n" << string(60, '=') << "\n";
-    cout << "EXPERIMENT COMPLETE\n";
+    cout << "EXPERIMENTS COMPLETE\n";
     cout << string(60, '=') << "\n";
     
     return 0;
