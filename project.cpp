@@ -341,12 +341,26 @@ void compareResults(const vector<AlgorithmResult>& results, const Graph& g) {
         result.print();
     }
     
-    // Find optimal size (from brute force)
-    int optimalSize = -1;
+    // Find optimal size (from brute force) or best size found
+    int referenceSize = -1;
+    bool hasOptimal = false;
+    
+    // First, look for optimal solution
     for (const auto& result : results) {
         if (result.isOptimal) {
-            optimalSize = result.vertexCover.size();
+            referenceSize = result.vertexCover.size();
+            hasOptimal = true;
             break;
+        }
+    }
+    
+    // If no optimal solution, use the smallest solution found
+    if (referenceSize == -1) {
+        referenceSize = INT_MAX;
+        for (const auto& result : results) {
+            if (result.vertexCover.size() < referenceSize) {
+                referenceSize = result.vertexCover.size();
+            }
         }
     }
     
@@ -360,10 +374,14 @@ void compareResults(const vector<AlgorithmResult>& results, const Graph& g) {
         bool valid = verifyCover(g, result.vertexCover);
         cout << "\n  Valid: " << (valid ? "Yes" : "NO - ERROR!");
         
-        // Calculate percent optimal
-        if (optimalSize > 0) {
-            double percentOptimal = ((double)optimalSize / result.vertexCover.size()) * 100.0;
-            cout << "\n  Percent Optimal: " << fixed << setprecision(1) << percentOptimal << "%";
+        // Calculate percent optimal (or percent of best found)
+        if (referenceSize > 0) {
+            double percentOptimal = ((double)referenceSize / result.vertexCover.size()) * 100.0;
+            if (hasOptimal) {
+                cout << "\n  Percent Optimal: " << fixed << setprecision(1) << percentOptimal << "%";
+            } else {
+                cout << "\n  Percent of Best: " << fixed << setprecision(1) << percentOptimal << "%";
+            }
         }
         cout << "\n";
     }
@@ -479,9 +497,9 @@ int main() {
         
         // Algorithm selection
         cout << "\nChoose algorithms to run:\n";
-        cout << "1. All algorithms (recommended for ≤15 vertices)\n";
-        cout << "2. Skip brute force (for larger graphs)\n";
-        cout << "3. Approximation algorithms only\n";
+        cout << "1. All algorithms (recommended for <=15 vertices)\n";
+        cout << "2. Approximation algorithms only\n";
+        cout << "3. 2-Approximation only (fastest)\n";
         cout << "Enter choice (1-3): ";
         
         int algoChoice;
@@ -503,23 +521,26 @@ int main() {
         // Run selected algorithms
         vector<AlgorithmResult> results;
         
-        if (algoChoice == 1 || algoChoice == 2) {
-            if (algoChoice == 1) {
-                if (vertices > 15) {
-                    cout << "\nWarning: Brute force may be slow for >15 vertices. Continue? (y/n): ";
-                    char confirm;
-                    cin >> confirm;
-                    if (confirm == 'y' || confirm == 'Y') {
-                        results.push_back(bruteForce.solve(g));
-                    }
-                } else {
+        if (algoChoice == 1) {
+            // All algorithms with warning for large graphs
+            if (vertices > 15) {
+                cout << "\nWarning: Brute force may be slow for >15 vertices. Continue? (y/n): ";
+                char confirm;
+                cin >> confirm;
+                if (confirm == 'y' || confirm == 'Y') {
                     results.push_back(bruteForce.solve(g));
                 }
+            } else {
+                results.push_back(bruteForce.solve(g));
             }
             results.push_back(greedy.solve(g));
             results.push_back(twoApprox.solve(g));
-        } else {
+        } else if (algoChoice == 2) {
+            // Approximation algorithms only
             results.push_back(greedy.solve(g));
+            results.push_back(twoApprox.solve(g));
+        } else {
+            // 2-Approximation only (fastest option)
             results.push_back(twoApprox.solve(g));
         }
         

@@ -12,7 +12,7 @@ Enter number of vertices: 16
 Enter edge probability (0.0-1.0): 0.3
 
 Choose algorithms to run:
-1. All algorithms (recommended for Γëñ15 vertices)
+1. All algorithms (recommended for <=15 vertices)
 2. Skip brute force (for larger graphs)
 3. Approximation algorithms only
 Enter choice (1-3): 1
@@ -104,7 +104,234 @@ Brute Force (Exact): 24.844 ms, 778101 ops (4968.80x slower)
 Greedy Approximation: 0.016 ms, 638 ops (3.20x slower)
 2-Approximation (Matching): 0.005 ms, 302 ops (fastest)
 
-Run another experiment? (y/n): n
+Run another experiment? (y/n): Y
+
+Choose graph type:
+1. Random Graph
+2. Complete Graph
+3. Cycle Graph
+4. Path Graph
+Enter choice (1-4): 3
+Enter number of vertices: 10
+
+Choose algorithms to run:
+1. All algorithms (recommended for <=15 vertices)
+2. Approximation algorithms only
+3. 2-Approximation only (fastest)
+Enter choice (1-3): 1
+
+============================================================
+TEST 2: Cycle Graph (10 vertices)
+============================================================
+Graph with 10 vertices and 10 edges:
+  (0, 1)
+  (1, 2)
+  (2, 3)
+  (3, 4)
+  (4, 5)
+  (5, 6)
+  (6, 7)
+  (7, 8)
+  (8, 9)
+  (9, 0)
+
+============================================================
+COMPARISON SUMMARY
+============================================================
+
+--- Brute Force (Exact) ---
+Vertex Cover Size: 5
+Vertices: { 0 2 4 6 8 }
+Execution Time: 0.216 ms
+Basic Operations: 4771
+Optimal: Yes
+
+--- Greedy Approximation ---
+Vertex Cover Size: 5
+Vertices: { 0 2 4 6 8 }
+Execution Time: 0.005 ms
+Basic Operations: 155
+Optimal: No (Approximation)
+
+--- 2-Approximation (Matching) ---
+Vertex Cover Size: 10
+Vertices: { 0 1 2 3 4 5 6 7 8 9 }
+Execution Time: 0.002 ms
+Basic Operations: 70
+Optimal: No (Approximation)
+
+--- Percent Optimal ---
+Brute Force (Exact):
+  Size: 5
+  Valid: Yes
+  Percent Optimal: 100.0%
+Greedy Approximation:
+  Size: 5
+  Valid: Yes
+  Percent Optimal: 100.0%
+2-Approximation (Matching):
+  Size: 10
+  Valid: Yes
+  Percent Optimal: 50.0%
+
+--- Performance Comparison ---
+Brute Force (Exact): 0.216 ms, 4771 ops (108.00x slower)
+Greedy Approximation: 0.005 ms, 155 ops (2.50x slower)
+2-Approximation (Matching): 0.002 ms, 70 ops (fastest)
+
+Choose graph type:
+1. Random Graph
+2. Complete Graph
+3. Cycle Graph
+4. Path Graph
+Enter choice (1-4): 1
+Enter number of vertices: 15
+Enter edge probability (0.0-1.0): 0.2
+
+Choose algorithms to run:
+1. All algorithms (recommended for <=15 vertices)
+2. Approximation algorithms only
+3. 2-Approximation only (fastest)
+Enter choice (1-3): 1
+
+============================================================
+TEST 3: Random Graph (15 vertices, 20% edge probability)
+============================================================
+Graph with 15 vertices and 16 edges:
+  (0, 4)
+  (0, 13)
+  (1, 12)
+  (1, 14)
+  (2, 5)
+  (2, 11)
+  (2, 14)
+  (3, 7)
+  (3, 11)
+  (5, 12)
+  (6, 9)
+  (7, 10)
+  (8, 10)
+  (8, 13)
+  (9, 10)
+  (10, 13)
+
+============================================================
+COMPARISON SUMMARY
+============================================================
+
+--- Brute Force (Exact) ---
+Vertex Cover Size: 8
+Vertices: { 0 1 2 3 5 6 8 10 }
+Execution Time: 7.064 ms
+Basic Operations: 148965
+Optimal: Yes
+
+--- Greedy Approximation ---
+Vertex Cover Size: 8
+Vertices: { 0 1 2 3 5 6 8 10 }
+Execution Time: 0.009 ms
+Basic Operations: 309
+Optimal: No (Approximation)
+
+--- 2-Approximation (Matching) ---
+Vertex Cover Size: 12
+Vertices: { 0 1 2 3 4 5 6 7 8 9 10 12 }
+Execution Time: 0.003 ms
+Basic Operations: 124
+Optimal: No (Approximation)
+
+--- Percent Optimal ---
+Brute Force (Exact):
+  Size: 8
+  Valid: Yes
+  Percent Optimal: 100.0%
+Greedy Approximation:
+  Size: 8
+  Valid: Yes
+  Percent Optimal: 100.0%
+2-Approximation (Matching):
+  Size: 12
+  Valid: Yes
+  Percent Optimal: 66.7%
+
+--- Performance Comparison ---
+Brute Force (Exact): 7.064 ms, 148965 ops (2354.67x slower)
+Greedy Approximation: 0.009 ms, 309 ops (3.00x slower)
+2-Approximation (Matching): 0.003 ms, 124 ops (fastest)
+
+Run another experiment? (y/n): y
+
+Choose graph type:
+1. Random Graph
+2. Complete Graph
+3. Cycle Graph
+4. Path Graph
+Enter choice (1-4): 1
+Enter number of vertices: 15
+Enter edge probability (0.0-1.0): 0.1
+
+Choose algorithms to run:
+1. All algorithms (recommended for <=15 vertices)
+2. Approximation algorithms only
+3. 2-Approximation only (fastest)
+Enter choice (1-3): 1
+
+============================================================
+TEST 4: Random Graph (15 vertices, 10% edge probability)
+============================================================
+Graph with 15 vertices and 8 edges:
+  (0, 12)
+  (1, 14)
+  (2, 8)
+  (3, 7)
+  (5, 7)
+  (5, 11)
+  (5, 12)
+  (7, 13)
+
+============================================================
+COMPARISON SUMMARY
+============================================================
+
+--- Brute Force (Exact) ---
+Vertex Cover Size: 5
+Vertices: { 0 1 2 5 7 }
+Execution Time: 0.983 ms
+Basic Operations: 17293
+Optimal: Yes
+
+--- Greedy Approximation ---
+Vertex Cover Size: 5
+Vertices: { 0 1 2 5 7 }
+Execution Time: 0.006 ms
+Basic Operations: 145
+Optimal: No (Approximation)
+
+--- 2-Approximation (Matching) ---
+Vertex Cover Size: 10
+Vertices: { 0 1 2 3 5 7 8 11 12 14 }
+Execution Time: 0.003 ms
+Basic Operations: 58
+Optimal: No (Approximation)
+
+--- Percent Optimal ---
+Brute Force (Exact):
+  Size: 5
+  Valid: Yes
+  Percent Optimal: 100.0%
+Greedy Approximation:
+  Size: 5
+  Valid: Yes
+  Percent Optimal: 100.0%
+2-Approximation (Matching):
+  Size: 10
+  Valid: Yes
+  Percent Optimal: 50.0%
+
+--- Performance Comparison ---
+Brute Force (Exact): 0.983 ms, 17293 ops (327.67x slower)
+Greedy Approximation: 0.006 ms, 145 ops (2.00x slower)
+2-Approximation (Matching): 0.003 ms, 58 ops (fastest)
 
 ============================================================
 EXPERIMENTS COMPLETE
