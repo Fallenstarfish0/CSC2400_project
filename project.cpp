@@ -54,6 +54,7 @@ struct AlgorithmResult {
     string algorithmName;
     set<int> vertexCover;  // The vertices in the cover
     double timeMilliseconds;  // Execution time
+    long long operationCount;  // Number of basic operations
     bool isOptimal;  // Whether this is guaranteed to be optimal
     
     void print() const {
@@ -65,6 +66,7 @@ struct AlgorithmResult {
         }
         cout << "}\n";
         cout << "Execution Time: " << fixed << setprecision(3) << timeMilliseconds << " ms\n";
+        cout << "Basic Operations: " << operationCount << "\n";
         cout << "Optimal: " << (isOptimal ? "Yes" : "No (Approximation)") << "\n";
     }
 };
@@ -79,11 +81,14 @@ struct AlgorithmResult {
 
 class BruteForceVC {
 private:
+    long long operations;
+    
     // Helper function: Check if a given set of vertices covers all edges
     // A vertex cover is valid if every edge has at least one endpoint in the set
     bool isValidCover(const Graph& g, const set<int>& cover) {
         // Check each edge in the graph
         for (const auto& edge : g.edges) {
+            operations += 2; // Two set lookups
             // If neither endpoint of the edge is in the cover, it's not valid
             if (cover.find(edge.u) == cover.end() && 
                 cover.find(edge.v) == cover.end()) {
@@ -96,7 +101,9 @@ private:
     // Recursive function to generate all possible subsets of vertices
     // and find the minimum valid vertex cover
     void findMinCoverRecursive(const Graph& g, int vertex, set<int>& current, 
-                               set<int>& minCover, int& minSize) {
+                            set<int>& minCover, int& minSize) {
+        operations++; // Count recursive call
+        
         // Pruning: If current set is already larger than best found, stop exploring
         if (current.size() >= minSize) {
             return;
@@ -127,6 +134,7 @@ private:
 public:
     AlgorithmResult solve(const Graph& g) {
         auto start = high_resolution_clock::now();
+        operations = 0; // Reset operation counter
         
         set<int> current;  // Current subset being explored
         set<int> minCover;  // Best (minimum) cover found
@@ -138,7 +146,7 @@ public:
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start).count() / 1000.0;
         
-        return {"Brute Force (Exact)", minCover, duration, true};
+        return {"Brute Force (Exact)", minCover, duration, operations, true};
     }
 };
 
@@ -154,6 +162,7 @@ class GreedyVC {
 public:
     AlgorithmResult solve(const Graph& g) {
         auto start = high_resolution_clock::now();
+        long long operations = 0;
         
         set<int> cover;  // Our vertex cover solution
         set<Edge*> uncoveredEdges;  // Edges not yet covered
@@ -161,6 +170,7 @@ public:
         // Initialize: All edges are uncovered
         for (const auto& edge : g.edges) {
             uncoveredEdges.insert(const_cast<Edge*>(&edge));
+            operations++; // Count insertion
         }
         
         // Keep going until all edges are covered
@@ -171,6 +181,7 @@ public:
             for (const Edge* e : uncoveredEdges) {
                 degreeCount[e->u]++;
                 degreeCount[e->v]++;
+                operations += 2; // Two array accesses
             }
             
             // Find vertex with maximum degree among uncovered edges
@@ -178,6 +189,7 @@ public:
             int maxDegree = -1;
             
             for (int v = 0; v < g.V; v++) {
+                operations++; // Count comparison
                 if (degreeCount[v] > maxDegree) {
                     maxDegree = degreeCount[v];
                     maxDegreeVertex = v;
@@ -186,10 +198,12 @@ public:
             
             // Add this vertex to our cover
             cover.insert(maxDegreeVertex);
+            operations++; // Count insertion
             
             // Remove all edges covered by this vertex
             auto it = uncoveredEdges.begin();
             while (it != uncoveredEdges.end()) {
+                operations++; // Count edge check
                 if ((*it)->u == maxDegreeVertex || (*it)->v == maxDegreeVertex) {
                     it = uncoveredEdges.erase(it);
                 } else {
@@ -201,7 +215,7 @@ public:
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start).count() / 1000.0;
         
-        return {"Greedy Approximation", cover, duration, false};
+        return {"Greedy Approximation", cover, duration, operations, false};
     }
 };
 
@@ -217,12 +231,14 @@ class TwoApproxVC {
 public:
     AlgorithmResult solve(const Graph& g) {
         auto start = high_resolution_clock::now();
+        long long operations = 0;
         
         set<int> cover;  // Our vertex cover solution
         vector<bool> edgeCovered(g.edges.size(), false);  // Track which edges are covered
         
         // Process each edge
         for (size_t i = 0; i < g.edges.size(); i++) {
+            operations++; // Count edge check
             // Skip if this edge is already covered
             if (edgeCovered[i]) continue;
             
@@ -231,10 +247,12 @@ public:
             // Add both endpoints of this edge to the cover
             cover.insert(e.u);
             cover.insert(e.v);
+            operations += 2; // Two insertions
             
             // Mark all edges incident to these vertices as covered
             for (size_t j = 0; j < g.edges.size(); j++) {
                 const Edge& other = g.edges[j];
+                operations++; // Count comparison
                 // An edge is covered if at least one endpoint is in the cover
                 if (other.u == e.u || other.u == e.v || 
                     other.v == e.u || other.v == e.v) {
@@ -246,7 +264,7 @@ public:
         auto end = high_resolution_clock::now();
         auto duration = duration_cast<microseconds>(end - start).count() / 1000.0;
         
-        return {"2-Approximation (Matching)", cover, duration, false};
+        return {"2-Approximation (Matching)", cover, duration, operations, false};
     }
 };
 
@@ -332,24 +350,25 @@ void compareResults(const vector<AlgorithmResult>& results, const Graph& g) {
         }
     }
     
-    // Calculate approximation ratios
-    cout << "\n--- Approximation Quality ---\n";
+    // Calculate percent optimal
+    cout << "\n--- Percent Optimal ---\n";
     for (const auto& result : results) {
         cout << result.algorithmName << ":\n";
         cout << "  Size: " << result.vertexCover.size();
         
-        if (optimalSize > 0 && !result.isOptimal) {
-            double ratio = (double)result.vertexCover.size() / optimalSize;
-            cout << " (Ratio: " << fixed << setprecision(2) << ratio << "x optimal)";
-        }
-        cout << "\n";
-        
         // Verify the cover is valid
         bool valid = verifyCover(g, result.vertexCover);
-        cout << "  Valid: " << (valid ? "Yes" : "NO - ERROR!") << "\n";
+        cout << "\n  Valid: " << (valid ? "Yes" : "NO - ERROR!");
+        
+        // Calculate percent optimal
+        if (optimalSize > 0) {
+            double percentOptimal = ((double)optimalSize / result.vertexCover.size()) * 100.0;
+            cout << "\n  Percent Optimal: " << fixed << setprecision(1) << percentOptimal << "%";
+        }
+        cout << "\n";
     }
     
-    // Compare execution times
+    // Compare execution times and operation counts
     cout << "\n--- Performance Comparison ---\n";
     double minTime = DBL_MAX;
     for (const auto& result : results) {
@@ -361,7 +380,8 @@ void compareResults(const vector<AlgorithmResult>& results, const Graph& g) {
     for (const auto& result : results) {
         double speedup = result.timeMilliseconds / minTime;
         cout << result.algorithmName << ": " 
-             << fixed << setprecision(3) << result.timeMilliseconds << " ms ";
+            << fixed << setprecision(3) << result.timeMilliseconds << " ms, "
+            << result.operationCount << " ops ";
         if (speedup > 1.0) {
             cout << "(" << fixed << setprecision(2) << speedup << "x slower)";
         } else {

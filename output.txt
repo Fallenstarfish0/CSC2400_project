@@ -1,0 +1,111 @@
+VERTEX COVER ALGORITHM COMPARISON
+Interactive Experiment Tool
+
+
+Choose graph type:
+1. Random Graph
+2. Complete Graph
+3. Cycle Graph
+4. Path Graph
+Enter choice (1-4): 1
+Enter number of vertices: 16
+Enter edge probability (0.0-1.0): 0.3
+
+Choose algorithms to run:
+1. All algorithms (recommended for Γëñ15 vertices)
+2. Skip brute force (for larger graphs)
+3. Approximation algorithms only
+Enter choice (1-3): 1
+
+============================================================
+TEST: Random Graph (16 vertices, 30% edge probability)
+============================================================
+Graph with 16 vertices and 36 edges:
+  (0, 2)
+  (0, 7)
+  (0, 8)
+  (0, 9)
+  (0, 13)
+  (1, 4)
+  (1, 5)
+  (1, 6)
+  (1, 8)
+  (1, 10)
+  (1, 11)
+  (1, 13)
+  (2, 5)
+  (2, 10)
+  (3, 5)
+  (3, 6)
+  (3, 14)
+  (4, 10)
+  (4, 12)
+  (4, 15)
+  (5, 7)
+  (5, 8)
+  (5, 10)
+  (6, 8)
+  (6, 9)
+  (6, 13)
+  (6, 15)
+  (7, 8)
+  (7, 14)
+  (7, 15)
+  (8, 9)
+  (9, 11)
+  (9, 12)
+  (9, 15)
+  (10, 12)
+  (11, 15)
+
+Warning: Brute force may be slow for >15 vertices. Continue? (y/n): y
+
+============================================================
+COMPARISON SUMMARY
+============================================================
+
+--- Brute Force (Exact) ---
+Vertex Cover Size: 10
+Vertices: { 0 1 3 4 5 6 7 9 10 11 }
+Execution Time: 24.844 ms
+Basic Operations: 778101
+Optimal: Yes
+
+--- Greedy Approximation ---
+Vertex Cover Size: 10
+Vertices: { 0 1 3 4 5 6 7 9 10 11 }
+Execution Time: 0.016 ms
+Basic Operations: 638
+Optimal: No (Approximation)
+
+--- 2-Approximation (Matching) ---
+Vertex Cover Size: 14
+Vertices: { 0 1 2 3 4 5 6 7 8 9 10 11 12 14 }
+Execution Time: 0.005 ms
+Basic Operations: 302
+Optimal: No (Approximation)
+
+--- Percent Optimal ---
+Brute Force (Exact):
+  Size: 10
+  Valid: Yes
+  Percent Optimal: 100.0%
+Greedy Approximation:
+  Size: 10
+  Valid: Yes
+  Percent Optimal: 100.0%
+2-Approximation (Matching):
+  Size: 14
+  Valid: Yes
+  Percent Optimal: 71.4%
+
+--- Performance Comparison ---
+Brute Force (Exact): 24.844 ms, 778101 ops (4968.80x slower)
+Greedy Approximation: 0.016 ms, 638 ops (3.20x slower)
+2-Approximation (Matching): 0.005 ms, 302 ops (fastest)
+
+Run another experiment? (y/n): n
+
+============================================================
+EXPERIMENTS COMPLETE
+============================================================
