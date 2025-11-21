@@ -6,6 +6,7 @@
 #include <cmath>
 #include <iomanip>
 #include <climits>
+#include <cfloat>
 #include <cstdlib>
 #include <ctime>
 #include <string>
@@ -52,7 +53,7 @@ public:
 struct AlgorithmResult {
     string algorithmName;
     set<int> vertexCover;  // The vertices in the cover
-    long long timeNanoseconds;  // Execution time
+    double timeMilliseconds;  // Execution time
     bool isOptimal;  // Whether this is guaranteed to be optimal
     
     void print() const {
@@ -63,7 +64,7 @@ struct AlgorithmResult {
             cout << v << " ";
         }
         cout << "}\n";
-        cout << "Execution Time: " << timeNanoseconds << " nanoseconds\n";
+        cout << "Execution Time: " << fixed << setprecision(3) << timeMilliseconds << " ms\n";
         cout << "Optimal: " << (isOptimal ? "Yes" : "No (Approximation)") << "\n";
     }
 };
@@ -135,7 +136,7 @@ public:
         findMinCoverRecursive(g, 0, current, minCover, minSize);
         
         auto end = high_resolution_clock::now();
-        auto duration = duration_cast<nanoseconds>(end - start).count();
+        auto duration = duration_cast<microseconds>(end - start).count() / 1000.0;
         
         return {"Brute Force (Exact)", minCover, duration, true};
     }
@@ -198,7 +199,7 @@ public:
         }
         
         auto end = high_resolution_clock::now();
-        auto duration = duration_cast<nanoseconds>(end - start).count();
+        auto duration = duration_cast<microseconds>(end - start).count() / 1000.0;
         
         return {"Greedy Approximation", cover, duration, false};
     }
@@ -243,7 +244,7 @@ public:
         }
         
         auto end = high_resolution_clock::now();
-        auto duration = duration_cast<nanoseconds>(end - start).count();
+        auto duration = duration_cast<microseconds>(end - start).count() / 1000.0;
         
         return {"2-Approximation (Matching)", cover, duration, false};
     }
@@ -350,17 +351,17 @@ void compareResults(const vector<AlgorithmResult>& results, const Graph& g) {
     
     // Compare execution times
     cout << "\n--- Performance Comparison ---\n";
-    long long minTime = LLONG_MAX;
+    double minTime = DBL_MAX;
     for (const auto& result : results) {
-        if (result.timeNanoseconds < minTime) {
-            minTime = result.timeNanoseconds;
+        if (result.timeMilliseconds < minTime) {
+            minTime = result.timeMilliseconds;
         }
     }
     
     for (const auto& result : results) {
-        double speedup = (double)result.timeNanoseconds / minTime;
+        double speedup = result.timeMilliseconds / minTime;
         cout << result.algorithmName << ": " 
-             << result.timeNanoseconds << " ns ";
+             << fixed << setprecision(3) << result.timeMilliseconds << " ms ";
         if (speedup > 1.0) {
             cout << "(" << fixed << setprecision(2) << speedup << "x slower)";
         } else {
