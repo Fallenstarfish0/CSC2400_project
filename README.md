@@ -60,7 +60,7 @@ Given an undirected graph, find the smallest set of vertices such that every edg
 
 2. **Navigate to Project Directory**
    ```bash
-   cd "c:\Users\Mitchell\OneDrive\Design of Algor\CSC2400_project"
+   cd "path/to/project/folder"
    ```
 
 ### Compilation
