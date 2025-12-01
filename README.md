@@ -68,17 +68,17 @@ Given an undirected graph, find the smallest set of vertices such that every edg
 Compile the program using GCC:
 
 ```bash
-g++ -o project project.cpp
+g++ -o bin/project src/project.cpp
 ```
 
-This creates an executable file named `project.exe` (Windows) or `project` (Unix/Linux).
+This creates an executable file in the `bin/` folder.
 
 ### Running the Program
 
 Execute the compiled program:
 
 ```bash
-.\project
+.\bin\project
 ```
 
 ## Usage Guide
@@ -162,10 +162,20 @@ This tool addresses several research questions:
 
 ```
 CSC2400_project/
-├── project.cpp          # Main source code
-├── README.md            # This documentation
-├── example_out.txt      # Sample program output
-└── output_2.txt         # Additional test results
+├── README.md                           # Project documentation
+├── src/                                # Source code
+│   └── project.cpp                     # Main C++ implementation
+├── bin/                                # Compiled executables
+│   └── project.exe                     # Windows executable
+├── output/                             # Example program outputs
+│   ├── example_out.txt                 # Sample test results
+│   ├── output.txt                      # Additional test output
+│   └── output_2.txt                    # Performance comparison data
+├── analysis/                           # Data analysis and visualization
+│   └── vertex_cover_graph_notebook.ipynb  # Jupyter analysis notebook
+└── docs/                               # Academic documentation
+    ├── VertexCover.pptx                # Project presentation
+    └── VertexCoverReport (1).docx      # Technical report
 ```
 
 ## Technical Notes
